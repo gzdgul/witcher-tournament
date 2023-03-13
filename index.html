@@ -15,20 +15,20 @@
             <br>
             <br>
             <br>
-            <button id="player1" onclick="player1()">Player1</button>
-            <button id="player2" onclick="player2()">Player2</button>
-            <button id="palyer3" onclick="player3()">Player3</button>
+            <button id="player1" onclick="changePlayer(playerMage)">Player1</button>
+            <button id="player2" onclick="changePlayer(playerWizard)">Player2</button>
+            <button id="palyer3" onclick="changePlayer(playerMagician)">Player3</button>
             <br>
             <br>
            <div style="width: 100%; height: 100%;" class="area float-start">
                <img id="player_img" class="img-fluid" src="">
-               <button id="attack_button" class="action_button" onclick="ply.attack()">Attack</button>
-               <button id="ulti_attack_button" class="action_button" onclick="ply.ultiAttack()">Ulti Attack</button>
-               <button id="damage_button" class="action_button" onclick="ply.damage()">Damage</button>
-               <button id="walk_button" class="action_button" onclick="ply.walk()">Walk</button>
-               <button id="jump_button" class="action_button" onclick="ply.jump()">Jump</button>
-               <button id="idle_button" class="action_button" onclick="ply.idle()">Idle</button>
-               <button id="death_button" class="action_button" onclick="ply.death()">Death</button>
+               <button id="attack_button" class="action_button" onclick="currentPlayer.attack()">Attack</button>
+               <button id="ulti_attack_button" class="action_button" onclick="currentPlayer.ultiAttack()">Ulti Attack</button>
+               <button id="damage_button" class="action_button" onclick="currentPlayer.damage()">Damage</button>
+               <button id="walk_button" class="action_button" onclick="currentPlayer.walk()">Walk</button>
+               <button id="jump_button" class="action_button" onclick="currentPlayer.jump()">Jump</button>
+               <button id="idle_button" class="action_button" onclick="currentPlayer.idle()">Idle</button>
+               <button id="death_button" class="action_button" onclick="currentPlayer.death()">Death</button>
                <br>
                <br>
                <br>

@@ -1,25 +1,22 @@
 const player_img_element = document.getElementById('player_img');
 const enemy_health_bar_element = document.getElementById('enemy_health_bar');
 const aciklama_element = document.getElementById('aciklama');
-let k = 300; // enemy health şimdilik
+let currentPlayer = null;
 
 class Player {
 
-    constructor(name, age, health,p_idle,p_walk,p_jump,p_attack,p_ulti,p_damage,p_death) {
-        this.name = name;
-        this.age = age;
-        this.health = health;
-        this.idlePosition = p_idle;
-        this.walkPosition = p_walk;
-        this.jumpPosition = p_jump;
-        this.attackPosition = p_attack;
-        this.ultiAttackPosition = p_ulti;
-        this.damagePosition = p_damage;
-        this.deathPosition = p_death;
-    }
-
-    sayName() {
-        alert('Hi! ' + this.name);
+    constructor(player_props) {
+        this.name = player_props.name;
+        this.age = player_props.age;
+        this.currentHealth = player_props.health;
+        this.totalHealth = player_props.health;
+        this.idlePosition = player_props.p_idle;
+        this.walkPosition = player_props.p_walk;
+        this.jumpPosition = player_props.p_jump;
+        this.attackPosition = player_props.p_attack;
+        this.ultiAttackPosition = player_props.p_ulti;
+        this.damagePosition = player_props.p_damage;
+        this.deathPosition = player_props.p_death;
     }
 
     generateRandomNumber(x , y) {
@@ -36,11 +33,11 @@ class Player {
         const attack = this.generateRandomNumber(30, 10);
         console.log(this.name + ' ATTACK: ', attack);
         player_img_element.src = this.attackPosition;
+        setTimeout(() => {
+            this.idle();
+        }, 1100);
         aciklama_element.innerText = this.name + ' ATTACK: ' + attack;
-        k = k - attack;
-        let p = Math.floor((k * 100) / 300);
-        console.log(p);
-        enemy_health_bar_element.style = 'width: ' + p + '%';
+        enemyBoss.damage(attack);
         return attack; //attack damage number
     }
     ultiAttack() {
@@ -48,19 +45,16 @@ class Player {
         console.log(this.name + ' ATTACK: ', ultiAttack);
         player_img_element.src = this.ultiAttackPosition;
         aciklama_element.innerText = this.name + ' ATTACK: ' + ultiAttack;
-        k = k - ultiAttack; // 250  ultiattack = 50
-        let p = Math.floor((k * 100) / 300);
-        console.log(p);
-        enemy_health_bar_element.style = 'width: ' + p + '%';
+        enemyBoss.damage(ultiAttack);
         return ultiAttack; //attack damage number
     }
 
     damage(x) {
-        this.health -= x;
-        console.log(this.name + ' HEALTH: ', this.health);
+        this.currentHealth -= x;
+        console.log(this.name + ' HEALTH: ', this.currentHealth);
         player_img_element.src = this.damagePosition;
         //aciklama_element.innerText = this.name + ' ATTACK: ' + ...;
-        return this.health; // after damage health seviyesi
+        return this.currentHealth; // after damage health seviyesi
     }
 
     idle() {
@@ -80,7 +74,56 @@ class Player {
 
 }
 
-//PLAYERS
+class Enemy extends Player {
+
+    constructor(player_props) {
+        super(player_props); // PLAYER sınıfının CONSRUCTOR fonksiyonu.
+    }
+
+    damage(x) {
+        this.currentHealth -= x;
+        let p = Math.floor((this.currentHealth * 100) / this.totalHealth);
+        enemy_health_bar_element.style = 'width: ' + p + '%';
+
+        if (this.currentHealth <= 0) {
+            this.currentHealth = 0;
+            this.death();
+        }
+
+    }
+
+    death() {
+        // super.death();
+        alert(this.name + ' IS DEAD!');
+    }
+
+}
+
+document.addEventListener('keyup', (event) => {
+    console.log(event);
+    switch (event.key) {
+        case 'e':
+            currentPlayer.attack();
+            break;
+        case ' ':
+            currentPlayer.jump();
+            break;
+    }
+})
+
+const Boss = {
+    name : 'Boss (Yasin)',
+    age : 27,
+    health : 300,
+    p_idle : null,
+    p_walk : null,
+    p_jump : null,
+    p_attack : null,
+    p_ulti : null,
+    p_damage : null,
+    p_death : null
+};
+// PLAYERS
 const Mage = {
     name : 'Mage',
     age : 27,
@@ -118,112 +161,22 @@ const Magician = {
     p_death : './assets/gifs/left/magician_death_transparent.gif'
 };
 
-const playerMage = new Player(
-    Mage.name,
-    Mage.age,
-    Mage.health,
-    Mage.p_idle,
-    Mage.p_walk,
-    Mage.p_jump,
-    Mage.p_attack,
-    Mage.p_ulti,
-    Mage.p_damage,
-    Mage.p_death,
-);
+const enemyBoss = new Enemy(Boss);
 
-const playerWizard = new Player(
-    Wizard.name,
-    Wizard.age,
-    Wizard.health,
-    Wizard.p_idle,
-    Wizard.p_walk,
-    Wizard.p_jump,
-    Wizard.p_attack,
-    Wizard.p_ulti,
-    Wizard.p_damage,
-    Wizard.p_death,
-);
+const playerMage = new Player(Mage);
 
-const playerMagician = new Player(
-    Magician.name,
-    Magician.age,
-    Magician.health,
-    Magician.p_idle,
-    Magician.p_walk,
-    Magician.p_jump,
-    Magician.p_attack,
-    Magician.p_ulti,
-    Magician.p_damage,
-    Magician.p_death,
-);
+const playerWizard = new Player(Wizard);
+
+const playerMagician = new Player(Magician);
 
 //enemy1.damage(player.attack()); // kalan can
 //player.damage(enemy1.attack());
 
-function player1() {
-
-    const actionButtons = document.querySelectorAll('.action_button');
-    actionButtons.forEach((actionButton) => {
-        let actionButton_onclick_attributes = actionButton.getAttribute('onclick');
-        if(actionButton_onclick_attributes.includes('ply')) {
-            let x = actionButton_onclick_attributes.replace('ply', 'playerMage');
-            actionButton.setAttribute('onclick', x);
-        }
-        else if (actionButton_onclick_attributes.includes('playerWizard')) {
-            let x = actionButton_onclick_attributes.replace('playerWizard', 'playerMage');
-            actionButton.setAttribute('onclick', x);
-        }
-        else if (actionButton_onclick_attributes.includes('playerMagician')) {
-            let x = actionButton_onclick_attributes.replace('playerMagician', 'playerMage');
-            actionButton.setAttribute('onclick', x);
-        }
-
-    });
-    player_img_element.src = Mage.p_idle;
-
+function changePlayer(whichPlayer) {
+    currentPlayer = whichPlayer;
+    currentPlayer.idle();
 }
-function player2() {
 
-    const actionButtons = document.querySelectorAll('.action_button');
-    actionButtons.forEach((actionButton) => {
-        let actionButton_onclick_attributes = actionButton.getAttribute('onclick');
-        if(actionButton_onclick_attributes.includes('ply')) {
-            let x = actionButton_onclick_attributes.replace('ply', 'playerWizard');
-            actionButton.setAttribute('onclick', x);
-        }
-        else if (actionButton_onclick_attributes.includes('playerMage')) {
-            let x = actionButton_onclick_attributes.replace('playerMage', 'playerWizard');
-            actionButton.setAttribute('onclick', x);
-        }
-        else if (actionButton_onclick_attributes.includes('playerMagician')) {
-            let x = actionButton_onclick_attributes.replace('playerMagician', 'playerWizard');
-            actionButton.setAttribute('onclick', x);
-        }
-
-    });
-    player_img_element.src = Wizard.p_idle;
-}
-function player3() {
-
-    const actionButtons = document.querySelectorAll('.action_button');
-    actionButtons.forEach((actionButton) => {
-        let actionButton_onclick_attributes = actionButton.getAttribute('onclick');
-        if(actionButton_onclick_attributes.includes('ply')) {
-            let x = actionButton_onclick_attributes.replace('ply', 'playerMagician');
-            actionButton.setAttribute('onclick', x);
-        }
-        else if (actionButton_onclick_attributes.includes('playerMage')) {
-            let x = actionButton_onclick_attributes.replace('playerMage', 'playerMagician');
-            actionButton.setAttribute('onclick', x);
-        }
-        else if (actionButton_onclick_attributes.includes('playerWizard')) {
-            let x = actionButton_onclick_attributes.replace('playerWizard', 'playerMagician');
-            actionButton.setAttribute('onclick', x);
-        }
-
-    });
-    player_img_element.src = Magician.p_idle;
-}
 /*
 class UltraPlayer extends Player {
     constructor(name, age, health) {
